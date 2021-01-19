@@ -2,21 +2,37 @@ import React, { Component } from 'react'
 import * as actions from '../store/actions/contacts'
 import { connect } from 'react-redux'
 
-class AddContact extends Component {
+class EditContact extends Component {
     state = {
-        id: Date.now(),
+        id: '',
         name: '',
         phone: '',
         email: '',
     }
 
+    componentDidMount() {
+        let id = this.props.location.pathname.split('/')[2]
+        let curContact = this.props.contacts.filter((item) => item.fireBaseid === id)[0]
+
+        this.setState({
+            fireBaseid: curContact.fireBaseid,
+            id: curContact.id,
+            name: curContact.name,
+            phone: curContact.phone,
+            email: curContact.email,
+        })
+    }
+
     hanldeChange = (event) => {
         const { name, value } = event.target
-        this.setState({ [name]: value })
+        this.setState({
+            ...this.state,
+            [name]: value
+        })
     }
 
     save = () => {
-        this.props.addContact(this.state)
+        this.props.editContact(this.state)
         this.props.history.push('/')
     }
 
@@ -80,11 +96,17 @@ class AddContact extends Component {
         )
     }
 }
-
+const mapPropsToState = (state) => {
+    return {
+        contacts: state.contactObject.contacts
+    }
+}
 const mapDispatchToProps = dispatch => {
     return {
-        addContact: (data) => dispatch(actions.post_Contact(data))
+        editContact: (data) => dispatch(actions.put_Contact(data))
     }
 }
 
-export default connect(null, mapDispatchToProps)(AddContact)
+export default connect(mapPropsToState, mapDispatchToProps)(EditContact)
+
+

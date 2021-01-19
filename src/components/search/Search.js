@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { searchContact } from '../../actions'
+import * as actions from '../../store/actions/contacts'
 import './Search.css'
 
 class Search extends React.Component {
@@ -38,4 +38,15 @@ class Search extends React.Component {
   }
 }
 
-export default connect(null, { searchContact })(Search)
+
+
+
+const mapDispatchToProps = dispatch => {
+  return {
+    searchContact: (data) => dispatch(actions.searchContact(data))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Search);
+
+

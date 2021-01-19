@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import * as actions from '../../store/actions/contacts'
+import toggleOpen from '../../decorators/toggleOpen'
 import ContactListItem from '../contact-list-item/ContactListItem'
 import './ContactList.css'
-import toggleOpen from '../../decorators/toggleOpen'
-import { connect } from 'react-redux'
-import { loadContacts } from '../../actions'
 
 class ContactList extends Component {
   componentDidMount() {
-    this.props.loadContacts()
+    if (!this.props.contacts) { //  filteredContacts === undefined
+      this.props.fetchContacts()
+      this.props.searchContact()
+    }
   }
 
   getContacts = (contacts) => (
@@ -17,34 +20,45 @@ class ContactList extends Component {
           <ContactListItem
             key={contact.id}
             contact={contact}
-            removeContact={this.props.handleRemoveContact}
-            editContact={this.props.handleEditContact}
           />
         ))}
     </>
   )
 
   render() {
-    const { filteredContacts, isOpen, toggle } = this.props
+    const { contacts, isOpen, toggle } = this.props
     return (
       <div className='container'>
         <button className='btn btn-primary btn-xs' onClick={toggle}>
           show/hide
         </button>
-        {isOpen ? this.getContacts(filteredContacts) : null}
+        {isOpen ? this.getContacts(contacts) : null}
       </div>
     )
   }
 }
 
-function mapStateToProps({ contactObject }) {
-  const { contacts, search } = contactObject
+// function mapStateToProps({ contactObject }) {
+//   const { contacts, search } = contactObject
+//   return {
+//     filteredContacts:
+//       contacts && contacts.filter((contact) => contact.name.includes(search)),
+//     contacts:this.state
+//   }
+// }
+
+
+const mapPropsToState = (state) => {
   return {
-    filteredContacts:
-      contacts && contacts.filter((contact) => contact.name.includes(search)),
+    contacts: state.contactObject.filteredContacts
+  }
+}
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchContacts: () => dispatch(actions.init_Contacts('')),
+    searchContact: (data) => dispatch(actions.searchContact(data))
   }
 }
 
-export default connect(mapStateToProps, { loadContacts })(
-  toggleOpen(ContactList)
-)
+export default connect(mapPropsToState, mapDispatchToProps)(toggleOpen(ContactList));
+

@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux'
-import contactsReducer from './contactsReducer'
+import {reducer as contactsReducer} from './contactsReducer'
 
 export default combineReducers({
   contactObject: contactsReducer,
